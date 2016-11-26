@@ -5,6 +5,16 @@ package com.example.retrofit.retrofit_rx.Api;
  * Created by WZG on 2016/7/16.
  */
 public class BaseResultEntity<T> {
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    String code;
+
     //  判断标示
     private int ret;
     //    提示信息

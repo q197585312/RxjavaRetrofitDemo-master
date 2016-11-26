@@ -3,6 +3,7 @@ package com.example.retrofit.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,16 +21,24 @@ import com.example.retrofit.retrofit_rx.http.HttpService;
 import com.example.retrofit.retrofit_rx.listener.HttpOnNextListener;
 import com.example.retrofit.retrofit_rx.listener.upload.ProgressRequestBody;
 import com.example.retrofit.retrofit_rx.listener.upload.UploadProgressListener;
+import com.example.retrofit.test.ApiStores;
+import com.example.retrofit.test.RegistInfo;
+import com.example.retrofit.test.TestRetrofit;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -64,7 +73,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                 onButton9Click();
                 break;
             case R.id.btn_rx:
-                simpleDo();
+                testHttp();
                 break;
             case R.id.btn_rx_uploade:
                 uploadeDo();
@@ -81,15 +90,17 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     //    完美封装简化版
     private void simpleDo() {
         SubjectPostApi postEntity = new SubjectPostApi(simpleOnNextListener,this);
+        postEntity.setBaseUrl("http://app.info.dig88api.com/index.php/");
         postEntity.setAll(true);
         HttpManager manager = HttpManager.getInstance();
         manager.doHttpDeal(postEntity);
+
     }
 
     //   回调一一对应
-    HttpOnNextListener simpleOnNextListener = new HttpOnNextListener<List<SubjectResulte>>() {
+    HttpOnNextListener simpleOnNextListener = new HttpOnNextListener<RegistInfo>() {
         @Override
-        public void onNext(List<SubjectResulte> subjects) {
+        public void onNext(RegistInfo subjects) {
             tvMsg.setText("网络返回：\n" + subjects.toString());
         }
 
@@ -97,7 +108,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         public void onCacheNext(String cache) {
             /*缓存回调*/
             Gson gson=new Gson();
-            java.lang.reflect.Type type = new TypeToken<BaseResultEntity<List<SubjectResulte>>>() {}.getType();
+            java.lang.reflect.Type type = new TypeToken<BaseResultEntity<RegistInfo>>() {}.getType();
             BaseResultEntity resultEntity= gson.fromJson(cache, type);
             tvMsg.setText("缓存返回：\n"+resultEntity.getData().toString() );
         }
@@ -116,7 +127,31 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
             tvMsg.setText("取消請求");
         }
     };
+       private void testHttp(){
+           TestRetrofit test = TestRetrofit.getInstance("http://app.info.dig88api.com/");
+           ApiStores server=test.getService(ApiStores.class);
+           Call<ResponseBody> call = server.register("4", "xstest01", "lsm4210793", "23424", "USD");
+           call.enqueue(new Callback<ResponseBody>() {
 
+               @Override
+               public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                   String body = null;//获取返回体的字符串
+                   try {
+                       body = response.body().string();
+                       tvMsg.setText(body);
+                   } catch (IOException e) {
+                       e.printStackTrace();
+                   }
+
+               }
+
+               @Override
+               public void onFailure(Call<ResponseBody> call, Throwable t) {
+                   tvMsg.setText(t.getMessage());
+               }
+           });
+
+    }
 
     /*********************************************文件上传***************************************************/
 

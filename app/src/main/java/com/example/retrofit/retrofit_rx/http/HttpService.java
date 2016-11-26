@@ -4,6 +4,7 @@ import com.example.retrofit.retrofit_rx.Api.BaseResultEntity;
 import com.example.retrofit.entity.resulte.RetrofitEntity;
 import com.example.retrofit.entity.resulte.SubjectResulte;
 import com.example.retrofit.entity.resulte.UploadResulte;
+import com.example.retrofit.test.RegistInfo;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Query;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 import rx.Observable;
@@ -46,5 +48,15 @@ public interface HttpService {
     @POST("AppYuFaKu/uploadHeadImg")
     Observable<BaseResultEntity<UploadResulte>> uploadImage(@Part("uid") RequestBody uid, @Part("auth_key") RequestBody  auth_key,
                                                             @Part MultipartBody.Part file);
+    /*    params.put("web_id", WebSiteUrl.WebId);
+                params.put("useracc", stregistername);
+                params.put("password", strregisterpasswd);
+                params.put("captcha", stryanzhengma);
+                params.put("currency", "USD"); //bizhong*/
+    @POST("page=signup_submitter")
+    Observable<BaseResultEntity<RegistInfo>> register(@Query("web_id") String web_id,@Query("useracc") String useracc,
+                                                      @Query("password") String password,@Query("captcha") String captcha,
+                                                      @Query("currency") String currency);
+
 
 }

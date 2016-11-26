@@ -32,7 +32,6 @@ public class SubjectPostApi extends BaseApi {
         setShowProgress(true);
         setCancel(true);
         setCache(true);
-        setMothed("AppFiftyToneGraph/videoLink");
         setCookieNetWorkTime(60);
         setCookieNoNetWorkTime(24*60*60);
     }
@@ -49,6 +48,6 @@ public class SubjectPostApi extends BaseApi {
 
     @Override
     public Observable getObservable(HttpService methods) {
-        return methods.getAllVedioBys(isAll());
+        return methods.register("4","xstest01","lsm4210793","23424","USD");
     }
 }
